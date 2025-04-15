@@ -1,6 +1,7 @@
 <template>
   <Sidebar>
     <SidebarHeader>
+      <ColorModeToggle />
       <h1>CV Workshop</h1>
     </SidebarHeader>
     <SidebarContent>

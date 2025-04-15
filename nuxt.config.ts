@@ -5,7 +5,7 @@ import path from "path";
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
-  modules: ["@nuxt/eslint", "shadcn-nuxt"],
+  modules: ["@nuxt/eslint", "@nuxtjs/color-mode", "shadcn-nuxt"],
   css: ["~/assets/css/tailwind.css", "~/assets/css/main.css"],
   // Enable SSG
   ssr: false,
@@ -40,4 +40,7 @@ export default defineNuxtConfig({
      */
     componentDir: "./components/ui",
   },
+  colorMode: {
+    classSuffix: ''
+  }
 });
