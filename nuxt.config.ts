@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
   modules: ["@nuxt/eslint", "shadcn-nuxt"],
-  css: ["~/assets/css/tailwind.css"],
+  css: ["~/assets/css/tailwind.css", "~/assets/css/main.css"],
   // Enable SSG
   ssr: false,
   // Enables the development server to be discoverable by other devices when running on iOS physical devices
