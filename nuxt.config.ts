@@ -1,4 +1,5 @@
 import tailwindcss from "@tailwindcss/vite";
+import path from "path";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -22,6 +23,11 @@ export default defineNuxtConfig({
       // Tauri requires a consistent port
       strictPort: true,
     },
+    resolve: {
+      alias: {
+        'html2canvas': path.resolve(__dirname, 'node_modules/html2canvas-pro')
+      },
+    }
   },
   shadcn: {
     /**
