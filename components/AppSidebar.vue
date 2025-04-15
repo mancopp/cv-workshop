@@ -5,7 +5,9 @@
       <h1>CV Workshop</h1>
     </SidebarHeader>
     <SidebarContent>
-      <SidebarGroup />
+      <SidebarGroup>
+        <Test />
+      </SidebarGroup>
       <SidebarGroup />
     </SidebarContent>
     <SidebarFooter />
@@ -20,4 +22,5 @@ import {
   SidebarGroup,
   SidebarHeader,
 } from '@/components/ui/sidebar'
+import Test from './Test.vue';
 </script>

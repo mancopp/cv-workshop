@@ -2,8 +2,10 @@
   <div>
     <SidebarProvider>
       <AppSidebar />
-      <main>
-        <SidebarTrigger />
+      <main class="w-full h-full">
+        <PageHeader>
+          <SidebarTrigger />
+        </PageHeader>
         <slot />
       </main>
     </SidebarProvider>

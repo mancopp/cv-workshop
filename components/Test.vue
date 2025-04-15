@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1 class="text-4xl underline">Hello world!</h1>
     <Button @click="onButtonClick">Click me!</Button>
   </div>
   <div>
