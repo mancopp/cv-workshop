@@ -46,13 +46,25 @@
           <h3 class="font-bold text-base">University of Blahblah - Informatics</h3>
           <p class="font-bold mb-2">Oct 2021 - Present</p>
 
-        <p>
+        <p class="p-2 tag-frontend tag-art">
+          #frontend #art
+          <br>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat, sunt eos fugit ducimus pariatur
           explicabo
           cum maxime nulla ut illum vel dolorum libero unde. Odit molestias recusandae velit impedit non?
         </p>        
         
-        <p>
+        <p class="p-2 tag-frontend tag-backend tag-devops">
+          #frontend #backend #devops
+          <br>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat, sunt eos fugit ducimus pariatur
+          explicabo
+          cum maxime nulla ut illum vel dolorum libero unde. Odit molestias recusandae velit impedit non?
+        </p>        
+        
+        <p class="p-2 tag-gamedev tag-godot tag-art">
+          #gamedev #art #godot
+          <br>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat, sunt eos fugit ducimus pariatur
           explicabo
           cum maxime nulla ut illum vel dolorum libero unde. Odit molestias recusandae velit impedit non?
@@ -68,3 +80,42 @@
 <script lang="ts" setup>
 
 </script>
+
+<style scoped>
+.highlighted-part {
+  position: relative;
+  border: 2px solid red;
+  border-radius: 4px;
+}
+
+.highlighted-part::after {
+  position: absolute;
+  color: white;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  content: '#frontend #backend #devops';
+  left: 0;
+  top: 0;
+  transform: translateY(-100%);
+  padding-inline: 4px;
+  padding-block: 2px;
+  background-color: red;
+}
+
+.hidden-part {
+  position: relative;
+  visibility: hidden;
+}
+
+.hidden-part::after {
+  position: absolute;
+  content: '... because: #gamedev #tauri #godot...';
+  visibility: visible;
+  display: block;
+  width: 100%;
+  color: rgb(171, 171, 171);
+  background-color: rgb(118, 118, 118);
+  padding: 5px;
+  top: 2px;
+}
+</style>
