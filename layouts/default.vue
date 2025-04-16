@@ -1,18 +1,5 @@
 <template>
   <div>
-    <SidebarProvider>
-      <AppSidebar />
-      <main class="w-full h-full">
-        <PageHeader>
-          <SidebarTrigger />
-        </PageHeader>
-        <slot />
-      </main>
-    </SidebarProvider>
+    <slot/>
   </div>
 </template>
-
-<script setup lang="ts">
-import AppSidebar from '@/components/AppSidebar.vue';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
-</script>

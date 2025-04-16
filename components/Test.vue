@@ -54,10 +54,3 @@ const onButtonClick = async () => {
   });
 };
 </script>
-
-<style scoped>
-.test-div {
-  background-color: red;
-  width: 447px;
-}
-</style>

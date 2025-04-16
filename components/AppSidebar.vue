@@ -6,21 +6,9 @@
     </SidebarHeader>
     <SidebarContent>
       <SidebarGroup>
-        <Test />
+        <slot />
       </SidebarGroup>
-      <SidebarGroup />
     </SidebarContent>
     <SidebarFooter />
   </Sidebar>
 </template>
-
-<script setup lang="ts">
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarHeader,
-} from '@/components/ui/sidebar'
-import Test from './Test.vue';
-</script>
