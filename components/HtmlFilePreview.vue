@@ -15,6 +15,7 @@ import ZoomShortcutHandler from '@/lib/zoom-shortcuts';
 
 const zoomEl = ref<HTMLElement | null>(null);
 const cvEl = ref<HTMLElement | null>(null);
+const zoomhandler = ref<ZoomShortcutHandler | null>(null);
 
 const handleGPress = async (event) => {
   if (event.key === 'g') {
@@ -43,13 +44,13 @@ const handleGPress = async (event) => {
 
 onMounted(() => {
   if (zoomEl.value) {
-    const zoomHandler = new ZoomShortcutHandler(zoomEl.value, {
+    zoomhandler.value = new ZoomShortcutHandler(zoomEl.value, {
       initialZoom: 2,
       minZoom: 1,
       maxZoom: 5,
       zoomStep: 0.5,
     });
-    zoomHandler.register();
+    zoomhandler.value.register();
   }
 
   // window.addEventListener('keydown', async (event) => {
@@ -73,6 +74,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+  zoomhandler.value.unregister();
   window.removeEventListener('keydown', handleGPress);
 });
 
