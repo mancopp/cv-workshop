@@ -2,16 +2,16 @@
   <div class="w-full h-full flex justify-center items-center overflow-scroll">
     <div ref="zoomEl" class="flex flex-row justify-center items-start gap-5 p-5 text-gray-800">
       <div
-        class="output-preview-container w-[700px] bg-white shadow-lg border-[1px]">
+        :style="{width: `${exportHtmlWidthPx}px`}" class="output-preview-container bg-white shadow-lg border-[1px]">
         <h2>FULL HTML</h2>
         <ComplicatedCv ref="inputHtmlComponent" />
       </div>    
       <div ref="processedHtmlContainer"
-        class="output-preview-container w-[700px] bg-white shadow-lg border-[1px]">
+        :style="{width: `${exportHtmlWidthPx}px`}" class="output-preview-container bg-white shadow-lg border-[1px]">
         <h2>PROCESSED HTML (EXPORT)</h2>
       </div>
       <div ref="previewHtmlContainer"
-        class="preview-container w-[700px] bg-white shadow-lg border-[1px]">
+        :style="{width: `${exportHtmlWidthPx}px`}" class="preview-container bg-white shadow-lg border-[1px]">
         <h2>PREVIEW HTML</h2>
       </div>
     </div>
@@ -19,8 +19,10 @@
 </template>
 
 <script lang="ts" setup>
-import { jsPDF } from "jspdf";
 import { writeFile, BaseDirectory } from '@tauri-apps/plugin-fs';
+import { jsPDF } from "jspdf";
+import html2canvas from 'html2canvas';
+import html2pdf from 'html2pdf.js';
 
 const inputHtmlComponent = useTemplateRef<HTMLElement | null>('inputHtmlComponent');
 const processedHtmlContainer = useTemplateRef<HTMLElement | null>('processedHtmlContainer');
@@ -30,6 +32,8 @@ const previewHtml = ref<HTMLElement | null>(null);
 
 const zoomEl = ref<HTMLElement | null>(null);
 const previewHtmlContainer = ref<HTMLElement | null>(null);
+
+const exportHtmlWidthPx = 700;
 
 const selectedTags = ["tag-art"];
 
@@ -44,30 +48,70 @@ const prepareHtmlForExport = (rootElement: HTMLElement) => {
     }
   });
 
-  newHtmlEl.style.width = '700px';
+  newHtmlEl.style.width = `${exportHtmlWidthPx}px`;
 
   return newHtmlEl;
 }
 
-const generatePDF = (rootElement: HTMLElement) => {
-  const pdf = new jsPDF('p', 'px', 'a4');
-  pdf.html(rootElement as HTMLElement, {
-    callback: function (pdf) {
-      const pdfData = new Uint8Array(pdf.output('arraybuffer'));
-      writeFile('yourFileName2.pdf', pdfData, {
-        baseDir: BaseDirectory.Download,
-      });
-      console.log('PDF generated!');
-    },
-    // margin: [20, 20, 20, 20], // Set appropriate margins
-    autoPaging: 'text', // Crucial for handling text flow across pages
-    html2canvas: {
-      allowTaint: true,
-      letterRendering: true,
-      logging: false,
-      scale: 0.638, // Adjust the scale to fit content
-    }
-  });
+const generatePDF = async (rootElement: HTMLElement) => {
+  rootElement.style.width = `${exportHtmlWidthPx}px`;
+  rootElement.style.backgroundColor = 'white';
+
+  console.log(rootElement);
+
+  zoomEl.value.appendChild(rootElement);
+
+  // const h2cConfig = {
+  //   allowTaint: true,
+  //   letterRendering: true,
+  //   logging: false,
+  //   scale: 0.638, // Adjust the scale to fit content
+  // };
+
+  // const h2poptions = {
+  //   html2canvas:  h2cConfig,
+  //   jsPDF:        { unit: 'px', format: 'a4', orientation: 'portrait' }
+  // };
+
+  // html2pdf(rootElement).set(h2poptions).outputPdf('arraybuffer').then((pdf) => {
+  //   const pdfData = new Uint8Array(pdf);
+  //   writeFile('yourFileName4.pdf', pdfData, {
+  //     baseDir: BaseDirectory.Download,
+  //   });
+  //   console.log('PDF generated!');
+  // });
+
+  // html2canvas(rootElement, h2cConfig).then(function(canvas) {
+  //   zoomEl.value.appendChild(canvas);
+  // });
+
+  // const pdf = new jsPDF('portrait', 'px', 'a4', true, false, 2, 1.0);
+  // console.log(pdf.getFont());
+  // pdf.addFont('Helvetica', 'normal');
+  // console.log(pdf.getFont());
+  // pdf.html(rootElement as HTMLElement, {
+  //   callback: function (pdf) {
+  //     const pdfData = new Uint8Array(pdf.output('arraybuffer'));
+  //     writeFile('yourFileName3.pdf', pdfData, {
+  //       baseDir: BaseDirectory.Download,
+  //     });
+  //     console.log('PDF generated!');
+  //   },
+  //   // margin: [20, 20, 20, 20], // Set appropriate margins
+  //   autoPaging: 'text', // Crucial for handling text flow across pages
+  //   html2canvas: h2cConfig,
+  //   // margin?: number | number[];
+  //   // autoPaging?: boolean | "slice" | "text";
+  //   // filename?: string;
+  //   // image?: HTMLOptionImage;
+  //   // html2canvas?: Html2CanvasOptions;
+  //   // jsPDF?: jsPDF;
+  //   // x: -480,
+  //   // y?: number;
+  //   // width: 20,
+  //   // windowWidth?: number;
+  //   // fontFaces?: HTMLFontFace[];
+  // });
 }
 
 const handleGPress = async (event) => {

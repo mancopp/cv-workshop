@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row w-full text-xs">
+  <div class="flex flex-row w-full text-xs font-helvetica">
     <div class="basis-1/3 bg-sky-900 text-white flex flex-col items-center">
       <div class="image w-full aspect-square flex justify-center items-center">
         <div class="aspect-square w-2/3 bg-sky-950 border-4 border-white rounded-full" />
@@ -80,42 +80,3 @@
 <script lang="ts" setup>
 
 </script>
-
-<style scoped>
-.highlighted-part {
-  position: relative;
-  border: 2px solid red;
-  border-radius: 4px;
-}
-
-.highlighted-part::after {
-  position: absolute;
-  color: white;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  content: '#frontend #backend #devops';
-  left: 0;
-  top: 0;
-  transform: translateY(-100%);
-  padding-inline: 4px;
-  padding-block: 2px;
-  background-color: red;
-}
-
-.hidden-part {
-  position: relative;
-  visibility: hidden;
-}
-
-.hidden-part::after {
-  position: absolute;
-  content: '... because: #gamedev #tauri #godot...';
-  visibility: visible;
-  display: block;
-  width: 100%;
-  color: rgb(171, 171, 171);
-  background-color: rgb(118, 118, 118);
-  padding: 5px;
-  top: 2px;
-}
-</style>
