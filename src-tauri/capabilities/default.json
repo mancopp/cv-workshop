@@ -6,6 +6,9 @@
     "main"
   ],
   "permissions": [
-    "core:default"
+    "core:default",
+    "fs:allow-download-write",
+    "fs:allow-download-read",
+    "fs:default"
   ]
 }
