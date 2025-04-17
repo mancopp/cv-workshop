@@ -1,5 +1,5 @@
 <template>
-  <div class="sticky top-0 bg-black p-2">
+  <div class="sticky top-0 bg-background p-2 w-full">
     <slot />
   </div>
 </template>

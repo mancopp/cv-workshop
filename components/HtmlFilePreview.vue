@@ -1,59 +1,147 @@
 <template>
-  <div ref="zoomEl" class="flex flex-col justify-center items-center w-full h-screen p-5">
-    <div ref="cvEl"
-      class="preview-container w-[700px] bg-white text-black shadow-lg border-[1px]">
-      <ComplicatedCv />
+  <div class="w-full h-full flex justify-center items-center overflow-scroll">
+    <div ref="zoomEl" class="flex flex-row justify-center items-start gap-5 p-5 text-gray-800">
+      <div
+        class="output-preview-container w-[700px] bg-white shadow-lg border-[1px]">
+        <h2>FULL HTML</h2>
+        <ComplicatedCv ref="inputHtmlComponent" />
+      </div>    
+      <div ref="processedHtmlContainer"
+        class="output-preview-container w-[700px] bg-white shadow-lg border-[1px]">
+        <h2>PROCESSED HTML (EXPORT)</h2>
+      </div>
+      <div ref="previewHtmlContainer"
+        class="preview-container w-[700px] bg-white shadow-lg border-[1px]">
+        <h2>PREVIEW HTML</h2>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { jsPDF } from "jspdf";
-import { writeFile, readFile, BaseDirectory } from '@tauri-apps/plugin-fs';
-import ZoomShortcutHandler from '@/lib/zoom-shortcuts';
+import { writeFile, BaseDirectory } from '@tauri-apps/plugin-fs';
 
+const inputHtmlComponent = useTemplateRef<HTMLElement | null>('inputHtmlComponent');
+const processedHtmlContainer = useTemplateRef<HTMLElement | null>('processedHtmlContainer');
+
+const processedHtml = ref<HTMLElement | null>(null);
+const previewHtml = ref<HTMLElement | null>(null);
 
 const zoomEl = ref<HTMLElement | null>(null);
-const cvEl = ref<HTMLElement | null>(null);
-const zoomhandler = ref<ZoomShortcutHandler | null>(null);
+const previewHtmlContainer = ref<HTMLElement | null>(null);
 
 const selectedTags = ["tag-art"];
 
+const prepareHtmlForExport = (rootElement: HTMLElement) => {
+  const newHtmlEl = rootElement.cloneNode(true) as HTMLElement;
+
+  const elWithTag = newHtmlEl.querySelectorAll("[class*='tag-']");
+  
+  elWithTag.forEach((el) => {
+    if (el.dataset.hidden) {
+      el.style.display = 'none';
+    }
+  });
+
+  newHtmlEl.style.width = '700px';
+
+  return newHtmlEl;
+}
+
+const generatePDF = (rootElement: HTMLElement) => {
+  const pdf = new jsPDF('p', 'px', 'a4');
+  pdf.html(rootElement as HTMLElement, {
+    callback: function (pdf) {
+      const pdfData = new Uint8Array(pdf.output('arraybuffer'));
+      writeFile('yourFileName2.pdf', pdfData, {
+        baseDir: BaseDirectory.Download,
+      });
+      console.log('PDF generated!');
+    },
+    // margin: [20, 20, 20, 20], // Set appropriate margins
+    autoPaging: 'text', // Crucial for handling text flow across pages
+    html2canvas: {
+      allowTaint: true,
+      letterRendering: true,
+      logging: false,
+      scale: 0.638, // Adjust the scale to fit content
+    }
+  });
+}
+
 const handleGPress = async (event) => {
   if (event.key === 'g') {
-    console.log('Button clicked!');
-
-    const pdf = new jsPDF('p', 'px', 'a4');
-    pdf.html(cvEl.value as HTMLElement, {
-      callback: function (pdf) {
-        const pdfData = new Uint8Array(pdf.output('arraybuffer'));
-        writeFile('yourFileName1.pdf', pdfData, {
-          baseDir: BaseDirectory.Download,
-        });
-        console.log('PDF generated!');
-      },
-      // margin: [20, 20, 20, 20], // Set appropriate margins
-      autoPaging: 'text', // Crucial for handling text flow across pages
-      html2canvas: {
-        allowTaint: true,
-        letterRendering: true,
-        logging: false,
-        scale: 0.638, // Adjust the scale to fit content
-      }
-    });
+    const preparedHtml = prepareHtmlForExport(processedHtml.value);  
+    generatePDF(preparedHtml);
   }
 };
 
-onMounted(() => {
-  if (zoomEl.value) {
-    zoomhandler.value = new ZoomShortcutHandler(zoomEl.value, {
-      initialZoom: 2,
-      minZoom: 1,
-      maxZoom: 5,
-      zoomStep: 0.5,
+const processHtml = (rootElement: HTMLElement) => {
+  const newHtmlEl = rootElement.cloneNode(true) as HTMLElement;
+  console.log(newHtmlEl);
+  console.log('Processing HTML...');
+
+  const elWithTag = newHtmlEl.querySelectorAll("[class*='tag-']");
+  
+  elWithTag.forEach((el) => {
+    let hide = true;
+    el.classList.forEach((c) => {
+      if (c.startsWith('tag-') && selectedTags.includes(c)) {
+        hide = false;
+      }
     });
-    zoomhandler.value.register();
-  }
+
+    if (hide) {
+      // el.style.backgroundColor = 'black';
+      el.dataset.hidden = true;
+    } else {
+      // For debug: Mark as scanned element
+      // el.style.backgroundColor = 'lightblue';
+    }
+  });
+
+  return newHtmlEl;
+}
+
+const drawPreviewOverlayHtml = (rootElement: HTMLElement) => {
+  const newHtmlEl = rootElement.cloneNode(true) as HTMLElement;
+
+  const elWithTag = newHtmlEl.querySelectorAll("[class*='tag-']");
+  
+  elWithTag.forEach((el) => {
+    if (el.dataset.hidden) {
+      // Depends on preview mode
+      el.style.display = 'none';
+      return;
+    }
+
+    const tags = [];
+    el.classList.forEach((c) => {
+      if (c.startsWith('tag-')) {
+        tags.push(c.replace('tag-', '#'));
+      }
+    });
+
+    if (tags.length > 0) {
+      const wrapperDiv = document.createElement('div');
+      const taglistDiv = document.createElement('div');
+
+      wrapperDiv.className = 'overlay highlighted-part';
+      taglistDiv.className = 'taglist';
+      taglistDiv.innerHTML = tags.join(' ');
+
+      wrapperDiv.appendChild(taglistDiv);
+      wrapperDiv.appendChild(el.cloneNode(true));
+
+      el.parentNode.replaceChild(wrapperDiv, el);
+    } 
+  });
+
+  return newHtmlEl;
+}
+
+onMounted(() => {
 
   // window.addEventListener('keydown', async (event) => {
   //   if (event.key === 'i') {
@@ -66,34 +154,22 @@ onMounted(() => {
   //     const decoder = new TextDecoder();
   //     const htmlContent = decoder.decode(input);
 
-  //     if (!cvEl.value) return;
+  //     if (!previewHtmlContainer.value) return;
 
-  //     cvEl.value.innerHTML = htmlContent;
+  //     previewHtmlContainer.value.innerHTML = htmlContent;
   //   }
   // });
 
   window.addEventListener('keydown', handleGPress);
 
-  const elWithArtTag = document.querySelectorAll('.preview-container .tag-art');
-  
-  elWithArtTag.forEach((el) => {
-    const wrapperDiv = document.createElement('div');
-    const taglistDiv = document.createElement('div');
+  processedHtml.value = processHtml(inputHtmlComponent.value.$el);
+  processedHtmlContainer.value.appendChild(processedHtml.value);
 
-    wrapperDiv.className = 'overlay highlighted-part';
-    taglistDiv.className = 'taglist';
-    taglistDiv.innerHTML = '#placeholder #tags #art #design #godot #test #helloworld';
-
-    wrapperDiv.appendChild(taglistDiv);
-    wrapperDiv.appendChild(el.cloneNode(true));
-
-    el.parentNode.replaceChild(wrapperDiv, el);
-  });
-
+  previewHtml.value = drawPreviewOverlayHtml(processedHtml.value);
+  previewHtmlContainer.value.appendChild(previewHtml.value);
 });
 
 onUnmounted(() => {
-  zoomhandler.value.unregister();
   window.removeEventListener('keydown', handleGPress);
 });
 
