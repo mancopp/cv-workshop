@@ -21,14 +21,11 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
     // Better support for Tauri CLI output
     clearScreen: false,
-    // Enable environment variables
-    // Additional environment variables can be found at
-    // https://v2.tauri.app/reference/environment-variables/
-    envPrefix: ["VITE_", "TAURI_"],
-    server: {
-      // Tauri requires a consistent port
-      strictPort: true,
-    },
+    envPrefix: ["VITE_"],
+    // server: {
+    //   // Tauri requires a consistent port
+    //   strictPort: true,
+    // },
     resolve: {
       alias: {
         'html2canvas': path.resolve(__dirname, 'node_modules/html2canvas-pro')

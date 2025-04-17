@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts" setup>
-import { writeFile, BaseDirectory } from '@tauri-apps/plugin-fs';
+// import { writeFile, BaseDirectory } from '@tauri-apps/plugin-fs';
 import { jsPDF } from "jspdf";
 import html2canvas from 'html2canvas';
 import html2pdf from 'html2pdf.js';
