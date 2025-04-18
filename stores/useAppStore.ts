@@ -1,4 +1,4 @@
-export const useAppStore = defineStore('app-store', {
+export const useAppStore = defineStore("app-store", {
   state: () => ({ htmlToExport: null as HTMLElement | null }),
   actions: {
     setHtmlToExport(htmlElement: HTMLElement) {
@@ -8,4 +8,4 @@ export const useAppStore = defineStore('app-store', {
   persist: {
     storage: localStorage,
   },
-})
+});
