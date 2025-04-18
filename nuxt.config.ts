@@ -4,7 +4,7 @@ import path from "path";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ["@nuxt/eslint", "@nuxtjs/color-mode", "shadcn-nuxt", "nuxt-electron"],
+  modules: ["@nuxt/eslint", "@nuxtjs/color-mode", "shadcn-nuxt", "nuxt-electron", "@pinia/nuxt", 'pinia-plugin-persistedstate/nuxt'],
   css: ["~/assets/css/tailwind.css", "~/assets/css/main.css"],
   ssr: false,
 
@@ -63,11 +63,6 @@ export default defineNuxtConfig({
 
   vite: {
     plugins: [tailwindcss()],
-    resolve: {
-      alias: {
-        'html2canvas': path.resolve(__dirname, 'node_modules/html2canvas-pro')
-      },
-    }
   },
 
   shadcn: {

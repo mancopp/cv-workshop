@@ -20,9 +20,8 @@
 
 <script lang="ts" setup>
 // import { writeFile, BaseDirectory } from '@tauri-apps/plugin-fs';
-import { jsPDF } from "jspdf";
-import html2canvas from 'html2canvas';
-import html2pdf from 'html2pdf.js';
+
+const appStore = useAppStore();
 
 const inputHtmlComponent = useTemplateRef<HTMLElement | null>('inputHtmlComponent');
 const processedHtmlContainer = useTemplateRef<HTMLElement | null>('processedHtmlContainer');
@@ -54,64 +53,17 @@ const prepareHtmlForExport = (rootElement: HTMLElement) => {
 }
 
 const generatePDF = async (rootElement: HTMLElement) => {
-  rootElement.style.width = `${exportHtmlWidthPx}px`;
-  rootElement.style.backgroundColor = 'white';
+  // rootElement.style.width = `${exportHtmlWidthPx}px`;
+  // rootElement.style.backgroundColor = 'white';
 
   console.log(rootElement);
 
-  zoomEl.value.appendChild(rootElement);
+  // zoomEl.value.appendChild(rootElement);
+  // console.log(window.electronAPI);
 
-  // const h2cConfig = {
-  //   allowTaint: true,
-  //   letterRendering: true,
-  //   logging: false,
-  //   scale: 0.638, // Adjust the scale to fit content
-  // };
-
-  // const h2poptions = {
-  //   html2canvas:  h2cConfig,
-  //   jsPDF:        { unit: 'px', format: 'a4', orientation: 'portrait' }
-  // };
-
-  // html2pdf(rootElement).set(h2poptions).outputPdf('arraybuffer').then((pdf) => {
-  //   const pdfData = new Uint8Array(pdf);
-  //   writeFile('yourFileName4.pdf', pdfData, {
-  //     baseDir: BaseDirectory.Download,
-  //   });
-  //   console.log('PDF generated!');
-  // });
-
-  // html2canvas(rootElement, h2cConfig).then(function(canvas) {
-  //   zoomEl.value.appendChild(canvas);
-  // });
-
-  // const pdf = new jsPDF('portrait', 'px', 'a4', true, false, 2, 1.0);
-  // console.log(pdf.getFont());
-  // pdf.addFont('Helvetica', 'normal');
-  // console.log(pdf.getFont());
-  // pdf.html(rootElement as HTMLElement, {
-  //   callback: function (pdf) {
-  //     const pdfData = new Uint8Array(pdf.output('arraybuffer'));
-  //     writeFile('yourFileName3.pdf', pdfData, {
-  //       baseDir: BaseDirectory.Download,
-  //     });
-  //     console.log('PDF generated!');
-  //   },
-  //   // margin: [20, 20, 20, 20], // Set appropriate margins
-  //   autoPaging: 'text', // Crucial for handling text flow across pages
-  //   html2canvas: h2cConfig,
-  //   // margin?: number | number[];
-  //   // autoPaging?: boolean | "slice" | "text";
-  //   // filename?: string;
-  //   // image?: HTMLOptionImage;
-  //   // html2canvas?: Html2CanvasOptions;
-  //   // jsPDF?: jsPDF;
-  //   // x: -480,
-  //   // y?: number;
-  //   // width: 20,
-  //   // windowWidth?: number;
-  //   // fontFaces?: HTMLFontFace[];
-  // });
+  appStore.setHtmlToExport(rootElement.outerHTML);
+  console.log(appStore.htmlToExport);
+  window.electronAPI.exportPDF();
 }
 
 const handleGPress = async (event) => {
