@@ -1,9 +1,13 @@
 <template>
   <div>
     <ul class="flex flex-col gap-2 p-4">
-      <li v-for="t in configuratorStore.documentTags" :key="t">
+      <li
+        v-for="t in configuratorStore.documentTags"
+        :key="t"
+        class="flex items-center gap-2"
+      >
         <Checkbox :id="`tag-${t}`" v-model="selectedTags[t]" />
-        <label class="ml-2 cursor-pointer" :for="`tag-${t}`">#{{ t }}</label>
+        <Label class="cursor-pointer" :for="`tag-${t}`">#{{ t }}</Label>
       </li>
     </ul>
   </div>

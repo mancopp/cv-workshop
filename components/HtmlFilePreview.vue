@@ -1,5 +1,6 @@
 <template>
   <div class="w-full h-full flex overflow-scroll">
+    <PreviewModeSelector />
     <div
       ref="zoomEl"
       class="flex flex-row justify-center items-start gap-5 p-5 text-gray-800"
@@ -101,11 +102,7 @@ const processHtml = (rootElement: HTMLElement) => {
     });
 
     if (hide) {
-      // el.style.backgroundColor = 'black';
       el.dataset.hidden = true;
-    } else {
-      // For debug: Mark as scanned element
-      // el.style.backgroundColor = 'lightblue';
     }
   });
 
@@ -137,7 +134,6 @@ const drawPreviewOverlayHtml = (rootElement: HTMLElement) => {
             li.style.textDecoration = "underline";
           taglistEl.appendChild(li);
         });
-
 
         wrapperDiv.appendChild(taglistEl);
         wrapperDiv.appendChild(el.cloneNode(true));
