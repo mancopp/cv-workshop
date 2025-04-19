@@ -30,9 +30,8 @@
 </template>
 
 <script lang="ts" setup>
-// import { writeFile, BaseDirectory } from '@tauri-apps/plugin-fs';
-
 const appStore = useAppStore();
+const configuratorStore = useConfiguratorStore();
 
 const inputHtmlComponent = useTemplateRef<HTMLElement | null>(
   "inputHtmlComponent"
@@ -48,10 +47,6 @@ const zoomEl = ref<HTMLElement | null>(null);
 const previewHtmlContainer = ref<HTMLElement | null>(null);
 
 const exportHtmlWidthPx = 700;
-
-const selectedTags = ["tag-art"];
-
-const documentTags = ref<Set<string>>(new Set());
 
 const prepareHtmlForExport = (rootElement: HTMLElement) => {
   const newHtmlEl = rootElement.cloneNode(true) as HTMLElement;
@@ -92,15 +87,14 @@ const handleGPress = async (event) => {
 
 const processHtml = (rootElement: HTMLElement) => {
   const newHtmlEl = rootElement.cloneNode(true) as HTMLElement;
-  console.log(newHtmlEl);
-  console.log("Processing HTML...");
+  const taggedElements = Array.from(newHtmlEl.querySelectorAll("[data-tags]"));
 
-  const elWithTag = newHtmlEl.querySelectorAll("[class*='tag-']");
-
-  elWithTag.forEach((el) => {
+  taggedElements.forEach((el) => {
     let hide = true;
-    el.classList.forEach((c) => {
-      if (c.startsWith("tag-") && selectedTags.includes(c)) {
+    const tags = el.dataset.tags.split(",");
+
+    tags.forEach((c) => {
+      if (configuratorStore.selectedTags.includes(c)) {
         hide = false;
       }
     });
@@ -127,10 +121,9 @@ const drawPreviewOverlayHtml = (rootElement: HTMLElement) => {
 
     if (tagsString) {
       const tags = el.dataset.tags.split(",");
-      console.log(el, tags);
 
       if (tags.length > 0) {
-        tags.map((t) => documentTags.value.add(t));
+        tags.map((t) => configuratorStore.documentTags.add(t));
         const wrapperDiv = document.createElement("div");
         const taglistDiv = document.createElement("div");
 
@@ -141,16 +134,48 @@ const drawPreviewOverlayHtml = (rootElement: HTMLElement) => {
         wrapperDiv.appendChild(taglistDiv);
         wrapperDiv.appendChild(el.cloneNode(true));
 
+        if (el.dataset.hidden) {
+          wrapperDiv.style.borderColor = "red";
+          taglistDiv.style.backgroundColor = "red";
+        }
+
         el.parentNode.replaceChild(wrapperDiv, el);
       }
     }
   });
 
-  console.log(documentTags.value);
   return newHtmlEl;
 };
 
+const updateProcessedHtmls = () => {
+  console.log("updateProcessedHtmls");
+
+  //FIXME: I feel like it's an awful piece of code
+  // To be rewritten using vue's reactivity system,
+  // instead of replacing the whole node tree
+  processedHtml.value = processHtml(inputHtmlComponent.value.$el);
+  processedHtmlContainer.value.removeChild(
+    processedHtmlContainer.value.firstChild
+  );
+  processedHtmlContainer.value.appendChild(processedHtml.value);
+
+  previewHtml.value = drawPreviewOverlayHtml(processedHtml.value);
+  previewHtmlContainer.value.removeChild(previewHtmlContainer.value.firstChild);
+  previewHtmlContainer.value.appendChild(previewHtml.value);
+};
+
+watch(
+  () => configuratorStore.selectedTags,
+  () => updateProcessedHtmls(),
+  {
+    deep: true,
+  }
+);
+
 onMounted(() => {
+  window.addEventListener("keydown", handleGPress);
+  updateProcessedHtmls();
+
   // window.addEventListener('keydown', async (event) => {
   //   if (event.key === 'i') {
   //     console.log('Button clicked!');
@@ -167,14 +192,6 @@ onMounted(() => {
   //     previewHtmlContainer.value.innerHTML = htmlContent;
   //   }
   // });
-
-  window.addEventListener("keydown", handleGPress);
-
-  processedHtml.value = processHtml(inputHtmlComponent.value.$el);
-  processedHtmlContainer.value.appendChild(processedHtml.value);
-
-  previewHtml.value = drawPreviewOverlayHtml(processedHtml.value);
-  previewHtmlContainer.value.appendChild(previewHtml.value);
 });
 
 onUnmounted(() => {
