@@ -36,11 +36,11 @@ export default defineNuxtConfig({
       },
     },
   },
-  router: {
-    options: {
-      hashMode: true,
-    },
-  },
+  // router: {
+  //   options: {
+  //     hashMode: true,
+  //   },
+  // },
   components: [
     {
       path: "~/components",

@@ -31,7 +31,7 @@ ipcMain.on('export-pdf', async (_event,) => {
   });
 
   // const dataUrl = `data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`;
-  await win.loadURL(`${process.env.VITE_DEV_SERVER_URL}/#/generate-pdf`);
+  await win.loadURL(`${process.env.VITE_DEV_SERVER_URL}/generate-pdf`);
 
   // TODO: Is there a better way to do this?
   await win.webContents.executeJavaScript(`
