@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full flex justify-center items-center overflow-scroll">
+  <div class="w-full h-full flex overflow-scroll">
     <div
       ref="zoomEl"
       class="flex flex-row justify-center items-start gap-5 p-5 text-gray-800"
@@ -9,7 +9,7 @@
         class="output-preview-container bg-white shadow-lg border-[1px]"
       >
         <h2>FULL HTML</h2>
-        <ComplicatedCv ref="inputHtmlComponent" />
+        <RealCv ref="inputHtmlComponent" />
       </div>
       <div
         ref="processedHtmlContainer"
@@ -50,6 +50,8 @@ const previewHtmlContainer = ref<HTMLElement | null>(null);
 const exportHtmlWidthPx = 700;
 
 const selectedTags = ["tag-art"];
+
+const documentTags = ref<Set<string>>(new Set());
 
 const prepareHtmlForExport = (rootElement: HTMLElement) => {
   const newHtmlEl = rootElement.cloneNode(true) as HTMLElement;
@@ -118,37 +120,33 @@ const processHtml = (rootElement: HTMLElement) => {
 const drawPreviewOverlayHtml = (rootElement: HTMLElement) => {
   const newHtmlEl = rootElement.cloneNode(true) as HTMLElement;
 
-  const elWithTag = newHtmlEl.querySelectorAll("[class*='tag-']");
+  const taggedElements = Array.from(newHtmlEl.querySelectorAll("[data-tags]"));
 
-  elWithTag.forEach((el) => {
-    if (el.dataset.hidden) {
-      // Depends on preview mode
-      el.style.display = "none";
-      return;
-    }
+  taggedElements.reverse().forEach((el) => {
+    const tagsString = el.dataset.tags;
 
-    const tags = [];
-    el.classList.forEach((c) => {
-      if (c.startsWith("tag-")) {
-        tags.push(c.replace("tag-", "#"));
+    if (tagsString) {
+      const tags = el.dataset.tags.split(",");
+      console.log(el, tags);
+
+      if (tags.length > 0) {
+        tags.map((t) => documentTags.value.add(t));
+        const wrapperDiv = document.createElement("div");
+        const taglistDiv = document.createElement("div");
+
+        wrapperDiv.className = "overlay highlighted-part";
+        taglistDiv.className = "taglist";
+        taglistDiv.innerHTML = tags.join(" ");
+
+        wrapperDiv.appendChild(taglistDiv);
+        wrapperDiv.appendChild(el.cloneNode(true));
+
+        el.parentNode.replaceChild(wrapperDiv, el);
       }
-    });
-
-    if (tags.length > 0) {
-      const wrapperDiv = document.createElement("div");
-      const taglistDiv = document.createElement("div");
-
-      wrapperDiv.className = "overlay highlighted-part";
-      taglistDiv.className = "taglist";
-      taglistDiv.innerHTML = tags.join(" ");
-
-      wrapperDiv.appendChild(taglistDiv);
-      wrapperDiv.appendChild(el.cloneNode(true));
-
-      el.parentNode.replaceChild(wrapperDiv, el);
     }
   });
 
+  console.log(documentTags.value);
   return newHtmlEl;
 };
 
