@@ -3,50 +3,76 @@ import path from "path";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
-  modules: ["@nuxt/eslint", "@nuxtjs/color-mode", "shadcn-nuxt"],
+  modules: [
+    "@nuxt/eslint",
+    "@nuxtjs/color-mode",
+    "shadcn-nuxt",
+    "nuxt-electron",
+    "@pinia/nuxt",
+    "pinia-plugin-persistedstate/nuxt",
+  ],
   css: ["~/assets/css/tailwind.css", "~/assets/css/main.css"],
-  // Enable SSG
   ssr: false,
-  // Enables the development server to be discoverable by other devices when running on iOS physical devices
-  devServer: { host: process.env.TAURI_DEV_HOST || "localhost" },
+
+  // FIXME: nuxt-electron seems to have some kind of issue with 404 atm.
+  // It is mainly caused by the buildAssetsDir being overriden to '/'.
+  // It is done so to make the app build correctly, but it throws a 404 error when the app is running in dev mode.
+  // So this will be a quick fix to let me work on the app, I'll look into it later.
+  app: {
+    baseURL: "./",
+    // buildAssetsDir: '/',
+  },
+  runtimeConfig: {
+    app: {
+      baseURL: "./",
+      // buildAssetsDir: '/',
+    },
+  },
+  nitro: {
+    runtimeConfig: {
+      app: {
+        baseURL: "./",
+      },
+    },
+  },
+  // router: {
+  //   options: {
+  //     hashMode: true,
+  //   },
+  // },
   components: [
     {
-      path: '~/components',
+      path: "~/components",
       pathPrefix: false,
     },
   ],
+  electron: {
+    build: [
+      {
+        entry: "electron/main.ts",
+      },
+      {
+        entry: "electron/preload.ts",
+        onstart(args) {
+          // Notify the Renderer-Process to reload the page when the Preload-Scripts build is complete,
+          // instead of restarting the entire Electron App.
+          args.reload();
+        },
+      },
+    ],
+    renderer: {},
+    disableDefaultOptions: true,
+  },
   vite: {
     plugins: [tailwindcss()],
-    // Better support for Tauri CLI output
-    clearScreen: false,
-    // Enable environment variables
-    // Additional environment variables can be found at
-    // https://v2.tauri.app/reference/environment-variables/
-    envPrefix: ["VITE_", "TAURI_"],
-    server: {
-      // Tauri requires a consistent port
-      strictPort: true,
-    },
-    resolve: {
-      alias: {
-        'html2canvas': path.resolve(__dirname, 'node_modules/html2canvas-pro')
-      },
-    }
   },
   shadcn: {
-    /**
-     * Prefix for all the imported component
-     */
     prefix: "",
-    /**
-     * Directory that the component lives in.
-     * @default "./components/ui"
-     */
     componentDir: "./components/ui",
   },
   colorMode: {
-    classSuffix: ''
-  }
+    classSuffix: "",
+  },
+  compatibilityDate: "2025-04-17",
 });
