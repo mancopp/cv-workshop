@@ -4,26 +4,28 @@
       ref="zoomEl"
       class="flex flex-row justify-center items-start gap-5 p-5 text-gray-800"
     >
+      <div>
+        <h2 class="text-white">PREVIEW HTML</h2>
+        <div
+          ref="previewHtmlContainer"
+          :style="{ width: `${exportHtmlWidthPx}px` }"
+          class="preview-container bg-white shadow-lg border-[1px]"
+        />
+      </div>
+      <div>
+        <h2 class="text-white">PROCESSED HTML (EXPORT)</h2>
+        <div
+          ref="processedHtmlContainer"
+          :style="{ width: `${exportHtmlWidthPx}px` }"
+          class="output-preview-container bg-white shadow-lg border-[1px]"
+        />
+      </div>
       <div
         :style="{ width: `${exportHtmlWidthPx}px` }"
-        class="output-preview-container bg-white shadow-lg border-[1px]"
+        class="bg-white shadow-lg border-[1px]"
       >
         <h2>FULL HTML</h2>
         <RealCv ref="inputHtmlComponent" />
-      </div>
-      <div
-        ref="processedHtmlContainer"
-        :style="{ width: `${exportHtmlWidthPx}px` }"
-        class="output-preview-container bg-white shadow-lg border-[1px]"
-      >
-        <h2>PROCESSED HTML (EXPORT)</h2>
-      </div>
-      <div
-        ref="previewHtmlContainer"
-        :style="{ width: `${exportHtmlWidthPx}px` }"
-        class="preview-container bg-white shadow-lg border-[1px]"
-      >
-        <h2>PREVIEW HTML</h2>
       </div>
     </div>
   </div>
@@ -50,10 +52,9 @@ const exportHtmlWidthPx = 700;
 
 const prepareHtmlForExport = (rootElement: HTMLElement) => {
   const newHtmlEl = rootElement.cloneNode(true) as HTMLElement;
+  const taggedElements = Array.from(newHtmlEl.querySelectorAll("[data-tags]"));
 
-  const elWithTag = newHtmlEl.querySelectorAll("[class*='tag-']");
-
-  elWithTag.forEach((el) => {
+  taggedElements.forEach((el) => {
     if (el.dataset.hidden) {
       el.style.display = "none";
     }
@@ -113,7 +114,6 @@ const processHtml = (rootElement: HTMLElement) => {
 
 const drawPreviewOverlayHtml = (rootElement: HTMLElement) => {
   const newHtmlEl = rootElement.cloneNode(true) as HTMLElement;
-
   const taggedElements = Array.from(newHtmlEl.querySelectorAll("[data-tags]"));
 
   taggedElements.reverse().forEach((el) => {
@@ -125,18 +125,26 @@ const drawPreviewOverlayHtml = (rootElement: HTMLElement) => {
       if (tags.length > 0) {
         tags.map((t) => configuratorStore.documentTags.add(t));
         const wrapperDiv = document.createElement("div");
-        const taglistDiv = document.createElement("div");
+        const taglistEl = document.createElement("ul");
 
         wrapperDiv.className = "overlay highlighted-part";
-        taglistDiv.className = "taglist";
-        taglistDiv.innerHTML = tags.join(" ");
+        taglistEl.className = "taglist flex gap-1";
 
-        wrapperDiv.appendChild(taglistDiv);
+        tags.map((t) => {
+          const li = document.createElement("li");
+          li.innerHTML = `#${t}`;
+          if (configuratorStore.selectedTags.includes(t))
+            li.style.textDecoration = "underline";
+          taglistEl.appendChild(li);
+        });
+
+
+        wrapperDiv.appendChild(taglistEl);
         wrapperDiv.appendChild(el.cloneNode(true));
 
         if (el.dataset.hidden) {
           wrapperDiv.style.borderColor = "red";
-          taglistDiv.style.backgroundColor = "red";
+          taglistEl.style.backgroundColor = "red";
         }
 
         el.parentNode.replaceChild(wrapperDiv, el);
@@ -154,13 +162,18 @@ const updateProcessedHtmls = () => {
   // To be rewritten using vue's reactivity system,
   // instead of replacing the whole node tree
   processedHtml.value = processHtml(inputHtmlComponent.value.$el);
-  processedHtmlContainer.value.removeChild(
-    processedHtmlContainer.value.firstChild
-  );
+  if (processedHtmlContainer.value.firstChild)
+    processedHtmlContainer.value.removeChild(
+      processedHtmlContainer.value.firstChild
+    );
   processedHtmlContainer.value.appendChild(processedHtml.value);
 
   previewHtml.value = drawPreviewOverlayHtml(processedHtml.value);
-  previewHtmlContainer.value.removeChild(previewHtmlContainer.value.firstChild);
+
+  if (previewHtmlContainer.value.firstChild)
+    previewHtmlContainer.value.removeChild(
+      previewHtmlContainer.value.firstChild
+    );
   previewHtmlContainer.value.appendChild(previewHtml.value);
 };
 
@@ -203,16 +216,8 @@ onUnmounted(() => {
 </script>
 
 <style>
-.preview-container [class*="tag-"] {
-  opacity: 0.5;
-}
-
-.preview-container .tag-art {
-  opacity: 1;
-}
-
-.preview-container *:not(.overlay) {
-  /* opacity: 0.7; */
+.output-preview-container [data-hidden="true"] {
+  opacity: 0.2;
 }
 
 .preview-container .overlay {
