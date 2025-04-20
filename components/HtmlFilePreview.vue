@@ -120,16 +120,17 @@ const drawPreviewOverlayHtml = (rootElement: HTMLElement) => {
       const tags = el.dataset.tags.split(",");
 
       if (tags.length > 0) {
-        tags.map((t) => configuratorStore.documentTags.add(t));
+        tags.map((t: string) => configuratorStore.documentTags.add(t));
         const wrapperDiv = document.createElement("div");
         const taglistEl = document.createElement("ul");
 
         wrapperDiv.className = "overlay highlighted-part";
-        taglistEl.className = "taglist flex gap-1";
+        taglistEl.className = "taglist flex items-center gap-1";
 
-        tags.map((t) => {
+        tags.map((t: string) => {
           const li = document.createElement("li");
           li.innerHTML = `#${t}`;
+          li.dataset.tag = t;
           if (configuratorStore.selectedTags.includes(t))
             li.style.textDecoration = "underline";
           taglistEl.appendChild(li);
@@ -139,8 +140,12 @@ const drawPreviewOverlayHtml = (rootElement: HTMLElement) => {
         wrapperDiv.appendChild(el.cloneNode(true));
 
         if (el.dataset.hidden) {
-          wrapperDiv.style.borderColor = "red";
-          taglistEl.style.backgroundColor = "red";
+          if (configuratorStore.previewMode === "show") {
+            wrapperDiv.style.borderColor = "red";
+            taglistEl.style.backgroundColor = "red";
+          } else {
+            return;
+          }
         }
 
         el.parentNode.replaceChild(wrapperDiv, el);
@@ -174,7 +179,22 @@ const updateProcessedHtmls = () => {
 };
 
 watch(
-  () => configuratorStore.selectedTags,
+  () => configuratorStore.hoveredTag,
+  (newVal) => {
+    if (newVal) {
+      document
+        .querySelectorAll(`[data-tag='${newVal}']`)
+        .forEach((el) => el.classList.add("highlighted-tag"));
+    } else {
+      document
+        .querySelectorAll(`[data-tag]`)
+        .forEach((el) => el.classList.remove("highlighted-tag"));
+    }
+  }
+);
+
+watch(
+  [() => configuratorStore.selectedTags, () => configuratorStore.previewMode],
   () => updateProcessedHtmls(),
   {
     deep: true,
@@ -224,5 +244,28 @@ onUnmounted(() => {
   padding: 4px;
   background-color: rgb(92, 92, 190);
   color: white;
+}
+
+.highlighted-tag {
+  background-color: rgba(0, 0, 0, 0.3);
+  background-image: linear-gradient(90deg, white 50%, transparent 50%),
+    linear-gradient(90deg, white 50%, transparent 50%),
+    linear-gradient(0deg, white 50%, transparent 50%),
+    linear-gradient(0deg, white 50%, transparent 50%);
+  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+  background-size: 15px 1px, 15px 1px, 1px 15px, 1px 15px;
+  background-position: left top, right bottom, left bottom, right top;
+  animation: border-dance 1s infinite linear;
+}
+
+@keyframes border-dance {
+  0% {
+    background-position: left top, right bottom, left bottom, right top;
+  }
+
+  100% {
+    background-position: left 15px top, right 15px bottom, left bottom 15px,
+      right top 15px;
+  }
 }
 </style>

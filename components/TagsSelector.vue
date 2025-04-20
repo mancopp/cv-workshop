@@ -5,6 +5,8 @@
         v-for="t in configuratorStore.documentTags"
         :key="t"
         class="flex items-center gap-2"
+        @mouseover="tagHover(t)"
+        @mouseout="tagUnhover"
       >
         <Checkbox :id="`tag-${t}`" v-model="selectedTags[t]" />
         <Label class="cursor-pointer" :for="`tag-${t}`">#{{ t }}</Label>
@@ -15,9 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 const configuratorStore = useConfiguratorStore();
-
 const selectedTags = ref<Record<string, boolean>>({});
 
 configuratorStore.documentTags.forEach((tag) => {
@@ -29,5 +29,15 @@ const applySelectedTags = () => {
     (tag) => selectedTags.value[tag]
   );
   configuratorStore.setSelectedTags(checkedTags);
+};
+
+const tagHover = (t: string) => {
+  configuratorStore.hoveredTag = t;
+  console.log(configuratorStore.hoveredTag);
+};
+
+const tagUnhover = () => {
+  configuratorStore.hoveredTag = null;
+  console.log(configuratorStore.hoveredTag);
 };
 </script>

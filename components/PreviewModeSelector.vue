@@ -1,5 +1,8 @@
 <template>
-  <Select v-model="selectedPreviewMode" default-value="show">
+  <Select
+    v-model="configuratorStore.previewMode"
+    :default-value="configuratorStore.previewMode"
+  >
     <SelectTrigger
       class="absolute top-4 right-4 bg-white shadow-black/20 shadow-md dark:shadow-none dark:bg-input dark:hover:bg-input hover:cursor-pointer"
     >
@@ -34,16 +37,5 @@
 </template>
 
 <script lang="ts" setup>
-const selectedPreviewMode = ref();
-
-watch(
-  () => selectedPreviewMode.value,
-  () => console.log(selectedPreviewMode.value)
-);
-
-// const previewModes = [
-//   "Show unmatched",
-//   // 'Trim hidden',
-//   "Hide unmatched",
-// ];
+const configuratorStore = useConfiguratorStore();
 </script>
