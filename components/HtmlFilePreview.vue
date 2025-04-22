@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full flex overflow-scroll">
+  <ScrollArea class="w-full h-full flex overflow-auto">
     <PreviewModeSelector />
     <div
       ref="zoomEl"
@@ -29,7 +29,8 @@
         <RealCv ref="inputHtmlComponent" />
       </div>
     </div>
-  </div>
+    <ScrollBar orientation="horizontal" />
+  </ScrollArea>
 </template>
 
 <script lang="ts" setup>
