@@ -1,17 +1,26 @@
 <template>
-  <div ref="container" class="w-full h-full">
-    <h1>Seeing this text means that some kind of error occured</h1>
-  </div>
+  <iframe
+    ref="iFrame"
+    class="w-full"
+    src="http://localhost:8000/"
+    frameborder="0"
+    @load="onIframeLoad"
+  />
 </template>
 
 <script setup lang="ts">
-const appStore = useAppStore();
+const { processHtml, prepareHtmlForExport } = useHtmlProcessors();
 
-const container = useTemplateRef<HTMLElement | null>('container');
+const iFrame = useTemplateRef<HTMLIFrameElement | null>("iFrame");
 
-onMounted(() => {
-  container.value.innerHTML = appStore.htmlToExport;
-  container.value.firstChild?.style.setProperty('width', '100%');
-  window.__onMountedComplete = true;
-});
+const onIframeLoad = () => {
+  if (!iFrame.value || !iFrame.value.contentWindow) return;
+
+  const processed = processHtml(iFrame.value.contentWindow.document.body);
+  const prepared = prepareHtmlForExport(processed, 700);
+  iFrame.value.contentWindow.document.body = prepared;
+  iFrame.value.height = `${iFrame.value.contentWindow.document.body.scrollHeight}`;
+
+  window.__readyToExport = true;
+};
 </script>

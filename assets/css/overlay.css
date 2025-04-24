@@ -1,0 +1,45 @@
+.overlay > * {
+  box-sizing: border-box;
+}
+
+.overlay {
+  border: 2px solid rgb(92, 92, 190);
+}
+
+.overlay .taglist {
+  margin: 0;
+  padding: 4px;
+  background-color: rgb(92, 92, 190);
+  color: white;
+
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  list-style: none;
+}
+
+.highlighted-tag {
+  z-index: 999;
+  /* outline: 500px solid #00000020; */
+
+  background-color: rgba(0, 0, 0, 0.3);
+  background-image: linear-gradient(90deg, white 50%, transparent 50%),
+    linear-gradient(90deg, white 50%, transparent 50%),
+    linear-gradient(0deg, white 50%, transparent 50%),
+    linear-gradient(0deg, white 50%, transparent 50%);
+  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+  background-size: 15px 1px, 15px 1px, 1px 15px, 1px 15px;
+  background-position: left top, right bottom, left bottom, right top;
+  animation: border-dance 1s infinite linear;
+}
+
+@keyframes border-dance {
+  0% {
+    background-position: left top, right bottom, left bottom, right top;
+  }
+
+  100% {
+    background-position: left 15px top, right 15px bottom, left bottom 15px,
+      right top 15px;
+  }
+}

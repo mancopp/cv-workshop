@@ -13,4 +13,5 @@ console.log('Preload script loaded');
 
 contextBridge.exposeInMainWorld('electronAPI', {
   exportPDF: () => ipcRenderer.send('export-pdf'),
+  importHtml: () => ipcRenderer.send('import-html'),
 });
