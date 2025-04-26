@@ -3,7 +3,7 @@
     <PreviewModeSelector />
     <iframe
       ref="iFrame"
-      class="w-full h-full"
+      class="w-[700px] h-full m-auto"
       src="http://localhost:8000/"
       frameborder="0"
       @load="onIframeLoad"
@@ -31,7 +31,7 @@ const updateIframe = () => {
 
   iFrame.value.contentWindow.document.body.style.backgroundColor = "white";
   iFrame.value.contentWindow.document.body.style.color = "black";
-  iFrame.value.contentWindow.document.body.style.padding = "1px";
+  // iFrame.value.contentWindow.document.body.style.padding = "1px";
   iFrame.value.contentWindow.document.body.style.boxSizing = "border-box";
 
   const processed = processHtml(iFrame.value.contentWindow.document.body);
@@ -39,7 +39,7 @@ const updateIframe = () => {
   iFrame.value.contentWindow.document.body = withOverlay;
 };
 
-const  handleKeyPress = async (event: KeyboardEvent) => {
+const handleKeyPress = async (event: KeyboardEvent) => {
   if (event.key === "g") {
     generatePDF();
   }
@@ -72,11 +72,11 @@ watch(
 );
 
 onMounted(() => {
-  window.addEventListener("keydown",  handleKeyPress);
+  window.addEventListener("keydown", handleKeyPress);
 });
 
 onUnmounted(() => {
-  window.removeEventListener("keydown",  handleKeyPress);
+  window.removeEventListener("keydown", handleKeyPress);
 });
 
 // on export: for every node not in the allow-list,

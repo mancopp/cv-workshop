@@ -25,18 +25,26 @@ const createWindow = () => {
   mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
 }
 
-ipcMain.on('import-html', async () => {
-  const file = await dialog.showOpenDialog({ filters: [{name: 'HTML Files', extensions: ['html']}], properties: ['openFile']});
-  console.log(file);
+ipcMain.handle('import-html', async () => {
+  try {
+    const file = await dialog.showOpenDialog({ filters: [{name: 'HTML Files', extensions: ['html']}], properties: ['openFile']});
+    console.log(file);
 
-  if(file.filePaths.length !== 1) return;
+    if(file.filePaths.length !== 1) return false;
 
-  fs.readFile(file.filePaths[0], function (err, html) {
-    if (err) {
-      throw err; 
-    }
-    serveFile(html);
-  });
+    fs.readFile(file.filePaths[0], function (err, html) {
+      if (err) {
+        throw err; 
+      }
+      serveFile(html);
+    });
+
+    return true;
+  }
+  catch (e) {
+    console.log(e);
+    return false;
+  }
 })
 
 ipcMain.on('export-pdf', async (_event) => {
