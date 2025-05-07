@@ -4,7 +4,7 @@
     :default-value="configuratorStore.previewMode"
   >
     <SelectTrigger
-      class="absolute top-4 right-4 bg-white shadow-black/20 shadow-md dark:shadow-none dark:bg-input dark:hover:bg-input hover:cursor-pointer"
+      class="absolute top-8 right-4 bg-white shadow-black/20 shadow-md dark:shadow-none dark:bg-input dark:hover:bg-input hover:cursor-pointer"
     >
       <SelectValue />
     </SelectTrigger>

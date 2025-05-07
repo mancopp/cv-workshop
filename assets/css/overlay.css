@@ -4,18 +4,23 @@
 
 .overlay {
   border: 2px solid rgb(92, 92, 190);
+  margin: 2px;
 }
 
 .overlay .taglist {
   margin: 0;
-  padding: 4px;
+  padding: 2px;
   background-color: rgb(92, 92, 190);
   color: white;
 
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 0;
   list-style: none;
+}
+
+.overlay .taglist li {
+  padding: 3px;
 }
 
 .highlighted-tag {
